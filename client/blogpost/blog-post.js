@@ -7,4 +7,3 @@ Template.blogPost.onCreated(function() {
         console.log("onCreated2");
     })
 });
-
