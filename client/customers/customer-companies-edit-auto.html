@@ -1,15 +1,19 @@
 <template name="updateCustomerEdit">
     {{> quickForm
-        collection="CustomerCompaniesGlobal"
+        collection="CustomerCompanies"
         doc=someDoc
         id="updateCustomerEdit"
-        type="update"
+        type="method-update"
+        meteormethod="CustomerCompanies.methods.update2"
     }}
 </template>
 
-<!--collection="CustomerCompaniesGlobal"-->
+
+
+
+    <!--collection="CustomerCompaniesGlobal"-->
     <!--doc=someDoc-->
     <!--id="updateCustomerEdit"-->
     <!--type="method-update"-->
     <!--singleMethodArgument=true-->
-    <!--meteormethod="CustomerCompanies.methods.update"-->
+

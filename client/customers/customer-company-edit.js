@@ -1,7 +1,7 @@
-import './customer-company-edit.html';
+//import './customer-company-edit.html';
 
-import { CustomerCompanies } from '../../api/customers/customer-company.js';
-import { update } from '../../api/customers/methods'
+//import { CustomerCompanies } from '../../api/customers/customer-company.js';
+//import { update } from '../../api/customers/methods'
 
 Template.customer_company_edit.onCreated(function() {
 
@@ -21,6 +21,7 @@ Template.customer_company_edit.onCreated(function() {
     this.errorsReact = new ReactiveDict();
     console.log("errors1 ", this.errorsReact);
     console.log("CustomerCompanies1 ", CustomerCompanies);
+
 });
 
 Template.customer_company_edit.helpers({
