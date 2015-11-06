@@ -1,0 +1,18 @@
+<template name="AppBody">
+
+    {{> sidebar }}
+
+    <div id="wrapper">
+
+        {{> topNav }}
+
+
+        <div id="main" class="container-fluid">
+            <main>
+                {{>Template.dynamic template=content}}
+            </main>
+        </div>
+
+        <!--{{> footer }}-->
+    </div>
+</template>
