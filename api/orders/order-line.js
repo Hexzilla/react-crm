@@ -1,10 +1,10 @@
-class salesRegionsCollection extends Mongo.Collection {};
+class orderLinesCollection extends Mongo.Collection {};
 
 // Make it available to the rest of the app
-SalesRegions = new salesRegionsCollection("SalesRegions");
+OrderLines = new orderLinesCollection("OrderLines");
 
 // Deny all client-side updates since we will be using methods to manage this collection
-SalesRegions.allow({
+OrderLines.allow({
     insert() { return true; },
     update() { return true; },
     remove() { return true; }
@@ -12,9 +12,9 @@ SalesRegions.allow({
 
 // Define the expected Schema for data going into,
 // and coming out of the database
-//SalesRegions.schema = Schemas.SalesRegionsSchema
+//OrderLines.schema = Schemas.OrderLinesSchema
 
 // Bolt that schema onto the collection so that all mutator
 // calls are automatically checked against the schema.
 // Collection2 is what's allowing this to happen
-SalesRegions.attachSchema(Schemas.SalesRegionSchema);
+OrderLines.attachSchema(Schemas.OrderLineSchema);
