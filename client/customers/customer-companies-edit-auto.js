@@ -14,3 +14,17 @@ Template.updateCustomerEdit.helpers({
     }
 });
 
+console.log("when do I run?");
+
+AutoForm.hooks({
+    updateCustomerEdit: {
+        onSuccess: function(formType, result) {
+            sAlert.success("Save successful");
+        },
+
+        onError: function(formType, error) {
+            sAlert.error("Error saving");
+        }
+
+    }
+})
