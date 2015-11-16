@@ -17,5 +17,6 @@ Template.counter.events({
     'click #resetCounter': function () {
         // increment the counter when button is clicked
         Session.set('counter', 0);
+        sAlert.success("Counter reset")
     }
 });
