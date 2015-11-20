@@ -22,6 +22,7 @@ Template.customer_company_edit.onCreated(function() {
     this.errorsReact = new ReactiveDict();
     console.log("errors1 ", this.errorsReact);
     console.log("CustomerCompanies1 ", CustomerCompanies);
+
 });
 
 Template.customer_company_edit.helpers({
@@ -66,7 +67,7 @@ Template.registerHelper("options", function() {
         });
     });
 
-    console.log("result", result);
+    console.log("sales region results ", result);
       return result;
     //return [
     //    {label: "2013", value: 2013},
