@@ -2,7 +2,7 @@
 //
 //var React = require('react');
 
-Input = React.createClass({
+TextInput = React.createClass({
     // list out our required and optional properties for this class
     propTypes: {
         name: React.PropTypes.string.isRequired,
@@ -46,4 +46,4 @@ Input = React.createClass({
     }
 });
 
-//module.exports = Input;
+//module.exports = TextInput;

@@ -1,7 +1,7 @@
 
-//var Input = require('./textInput');
+//var TextInput = require('./textInput');
 
-// App component - represents the whole app
+// Top of the stack, represents the whole page
 CustomerEditPageWrapper = React.createClass({
     // This mixin makes the getMeteorData method work
     mixins: [ReactMeteorData],
@@ -21,58 +21,22 @@ CustomerEditPageWrapper = React.createClass({
         };
     },
 
-    saveCustomer(event) {
-        event.preventDefault();
-
-        //console.log("submitted event: ", event);
-        //console.log("this: ", this);
-
-        // get the data out of the template (yuk)
-        const dataFromForm = {
-            name: event.target.name.value,
-            email: event.target.email.value,
-            postcode: event.target.postcode.value
-        };
-
-        //console.log("dataFromForm", dataFromForm);
+    // this code could be moved down to the CustomerEditPage, but it seems cleaner
+    // to keep all the db access in one place.  This also effectively separates the child
+    // component from the data access which may be good for disconnected data scenarios
+    saveCustomer(customer) {
+        //console.log("submitted customer: ", customer);
 
         const custId = FlowRouter.getParam('_id');
 
         // call the method for upserting the data
         CustomerCompanies.methods.updateManualForm.call({
             customerId: custId,
-            data: dataFromForm
+            data: customer
         }, (err, res) => {
             //console.log ("CustomerCompanies.methods.updateManualForm.call was called");
             if (err) {
-                if (err.error === 'validation-error') {
-
-                    console.log(err);
-
-                    // Initialize error object
-                    const errors = {
-                        data: [],
-                        customerId: [],
-                        name: [],
-                        email: [],
-                        postcode: []
-                    };
-
-                    // Go through validation errors returned from Method
-                    err.details.forEach((fieldError) => {
-                        // XXX i18n
-                        if (errors[fieldError.name]) {
-                            errors[fieldError.name].push(fieldError.type);
-                        }
-                    });
-
-                    // Update ReactiveDict, errors will show up in the UI
-
-                    this.data.errorsList.set(errors);
-                    //console.log("errors3 ", Template.instance().errors);
-                }
                 sAlert.error(err.message);
-                console.log("Save error ", err);
             } else {
                 sAlert.success("Save successful")
             }
@@ -81,7 +45,6 @@ CustomerEditPageWrapper = React.createClass({
     },
 
     render() {
-
         //console.log("render started")
         if (this.data.customerLoading) {
             return ( <h3>Loading</h3> );
@@ -94,9 +57,4 @@ CustomerEditPageWrapper = React.createClass({
         );
     }
 });
-//<div className="form-group">
-//    <label for="nextContactDate">Next contact date</label>
-//    <input type="text" id="nextContactDate" className="form-control"
-//           defaultValue={this.data.customer.nextContactDate}/>
-//</div>
 
