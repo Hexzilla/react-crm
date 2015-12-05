@@ -52,15 +52,30 @@
 //    }
 //});
 
-FlowRouter.route('/', {
-    name: "home",
-    action: function() {
-        ReactLayout.render(AppReact);
-    }
-});
-FlowRouter.route('/customersReact/:_id', {
-    name: 'CustomerCompany.editReact',
+import React from 'react';
+import {mount} from 'react-mounter';
+// load Layout and Welcome React components
+import {Layout, Welcome} from './app/app.jsx';
+import CustomersList from './customers/customers-list.jsx';
+import CustomerEditPageWrapper from './customers/customer-edit-page-wrapper.jsx';
+
+
+FlowRouter.route("/", {
     action() {
-        ReactLayout.render(CustomerEditPageWrapper);
+        mount(Layout, {
+            //content: (<Welcome name="arunoda"/>)
+            content: <CustomersList />
+        });
     }
 });
+
+FlowRouter.route('/customers/:_id', {
+    name: 'CustomerCompany.edit',
+    action() {
+        mount(Layout, {
+            //content: (<Welcome name="arunoda"/>)
+            content: <CustomerEditPageWrapper />
+        });
+    }
+});
+
