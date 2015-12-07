@@ -4,6 +4,11 @@
 var React = require('react');
 
 import CustomerEditPage from './customer-edit-page.jsx';
+import { createHistory, useBasename } from 'history'
+
+const history = useBasename(createHistory)({
+    basename: '/'
+});
 
 // Top of the stack, represents the whole page
 CustomerEditPageWrapper = React.createClass({
@@ -12,18 +17,27 @@ CustomerEditPageWrapper = React.createClass({
 
     // Loads items from the Tasks collection and puts them on this.data.tasks
     getMeteorData() {
-        console.log("CustomerEditForm.getMeteorData");
+        //console.log("CustomerEditForm.getMeteorData");
 
-        const customerId = () => FlowRouter.getParam('_id');
-        var handle = Meteor.subscribe('CustomerCompany.get', customerId());
+        const customerId = this.props.params.id;
+        console.log("params", this.props.params)
+        var cust;
+        var handle;
 
-        cust = CustomerCompanies.findOne({_id: customerId()});
+        const newCustomer = !customerId;
 
-        console.log("CustomerEditForm.getMeteorData cust ", cust);
+        if (!newCustomer) {
+            handle = Meteor.subscribe('CustomerCompany.get', customerId);
+            cust = CustomerCompanies.findOne({_id: customerId});
+        }
+
+        //console.log("CustomerEditForm.getMeteorData cust ", cust);
 
         return {
-            customerLoading: !handle.ready(),
-            customer: cust
+            customerLoading: handle ? !handle.ready() : {},
+            customer: cust,
+            customerId: customerId,
+            newCustomer: newCustomer
         };
     },
 
@@ -33,7 +47,7 @@ CustomerEditPageWrapper = React.createClass({
     saveCustomer(customer) {
         //console.log("submitted customer: ", customer);
 
-        const custId = FlowRouter.getParam('_id');
+        const custId = this.props.params.id;
 
         // call the method for upserting the data
         CustomerCompanies.methods.updateManualForm.call({
@@ -44,7 +58,9 @@ CustomerEditPageWrapper = React.createClass({
             if (err) {
                 sAlert.error(err.message);
             } else {
-                sAlert.success("Save successful")
+                sAlert.success("Save successful");
+
+                history.push('/');
             }
         });
 
@@ -52,8 +68,8 @@ CustomerEditPageWrapper = React.createClass({
 
     render() {
         //console.log("render started")
-        if (this.data.customerLoading) {
-            return ( <h3>Loading</h3> );
+        if (!this.data.newCustomer && this.data.customerLoading) {
+            return ( <h3>Loading Customer</h3> );
         }
         return (
             <CustomerEditPage
