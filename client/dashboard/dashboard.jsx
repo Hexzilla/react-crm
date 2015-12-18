@@ -1,4 +1,6 @@
 import React from 'react';
+import OrdersList from '../sales/orders-list.jsx';
+import CustomersList from '../customers/customers-list.jsx';
 
 const Dashboard = React.createClass({
 
@@ -11,11 +13,12 @@ const Dashboard = React.createClass({
                         <h3>Dashboard <i className="fa fa-dashboard"></i></h3>
                     </div>
                 </div>
+                <OrdersList/>
                 <CustomersList/>
             </div>
         );
     }
 
-})
+});
 
 export default Dashboard;
