@@ -1,4 +1,5 @@
 
-Meteor.publish('SalesRegions.All', function() {
+Meteor.publish('SalesRegions.All', function () {
     return SalesRegions.find();
 });
+
