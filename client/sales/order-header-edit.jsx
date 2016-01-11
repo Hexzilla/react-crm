@@ -2,110 +2,85 @@ import React from 'react';
 import Autosuggest from 'react-autosuggest';
 import AsyncSelectInput from '../controls/asyncSelectInput.jsx';
 
+
 const OrderHeaderEdit = React.createClass({
     propTypes: {
         order: React.PropTypes.object.isRequired,
         onChange: React.PropTypes.func.isRequired,
+        onCustomerChange: React.PropTypes.func.isRequired,
         onSave: React.PropTypes.func.isRequired,
         errors: React.PropTypes.object.isRequired,
         isValid: React.PropTypes.bool,
     },
 
-    //mixins: [ ReactMeteorData ],
-
-    // Loads items from the Tasks collection and puts them on this.data.tasks
-    //getMeteorData() {
-        //console.log("OrderEditForm.getMeteorData");
-
-        // for the companies list on the Order Header
-        //var customerHandle = Meteor.subscribe('CustomerCompanies.public');
-        //var customers = CustomerCompanies.find().fetch();
-        //
-        //return {
-        //    customersLoading: customerHandle ? !customerHandle.ready() : {},
-        //    customers
-        //};
-    //},
-
     getCustomers: function getCustomers(input) {
-        //console.log("getCustomers", input);
+        console.log("OrderHeaderEdit.getCustomers()", input);
         var customerHandle = Meteor.subscribe('CustomerCompanies.searchByName', input);
         return CustomerCompanies.find().fetch();
     },
 
-    loadOptions(input, callback) {
-
-        console.log("getOptions", input);
-        //input = input.toLowerCase();
-
-        var data = {
-            options: this.getCustomers(input), //this.data.customers,
-            complete: true
-        };
-
-        setTimeout(function () {
-            console.log("setTimeout", input);
-            callback(null, data);
-        }, 500);
-    },
-
     render() {
-        console.log("OrderHeaderEdit props: ", this.props);
+        console.log("OrderHeaderEdit.render() - props: ", this.props);
 
+        const value = {
+            _id: this.props.order.customerId ? this.props.order.customerId : '',
+            name: this.props.order.customerName
+        };
 
         return (
 
-
             <div>
+                <div className="col-md-6">
+                    <AsyncSelectInput
+                        name="customerId"
+                        label="Customer"
+                        value={value}
+                        onChange={this.props.onCustomerChange}
+                        error={this.props.errors.customerId}
+                        loadOptions={this.getCustomers}
+                        valueKey="_id"
+                        labelKey="name"
+                        hideLabel={true}
+                    />
 
+                    <TextInput name="notes" onChange={this.props.onChange} value={this.props.order.notes}
+                               error={this.props.errors.notes} hideLabel={true} textRows={5} />
 
-                <AsyncSelectInput
-                    name="customerId"
-                    label="Customer"
-                    value={this.props.order.customerId ? this.props.order.customerId : ''}
-                    onChange={this.props.onChange}
-                    //placeholder="Next contact date"
-                    error={this.props.errors.customerId}
-                    loadOptions={this.loadOptions}
-                    valueKey="_id"
-                    labelKey="name"
+                </div>
 
-                />
+                <div className="col-md-6">
 
-                <TextInput
-                    name="deliveryAddress1"
-                    label="Delivery Address 1"
-                    onChange={this.props.onChange}
-                    placeholder="Delivery Address 1"
-                    value={this.props.order.deliveryAddress1}
-                    error={this.props.errors.deliveryAddress1}
-                />
+                    <TextInput name="deliveryAddress1" onChange={this.props.onChange}
+                               value={this.props.order.deliveryAddress1} error={this.props.errors.deliveryAddress1}
+                               hideLabel={true}/>
 
+                    <TextInput name="deliveryAddress2" onChange={this.props.onChange}
+                               value={this.props.order.deliveryAddress2}
+                               error={this.props.errors.deliveryAddress2} hideLabel={true}/>
 
-                <TextInput
-                    name="notes"
-                    label="Notes"
-                    onChange={this.props.onChange}
-                    placeholder="Notes"
-                    value={this.props.order.notes}
-                    error={this.props.errors.notes}
-                />
+                    <TextInput name="town" onChange={this.props.onChange} value={this.props.order.town}
+                               error={this.props.errors.town} hideLabel={true}/>
 
-                <div className="form-group">
-                <label>Total Value: </label>
-                <label name="orderTotal">{this.props.order.totalValue}</label>
+                    <TextInput name="county" onChange={this.props.onChange} value={this.props.order.county}
+                               error={this.props.errors.county} hideLabel={true}/>
+
+                    <TextInput name="postcode" onChange={this.props.onChange} value={this.props.order.postcode}
+                               error={this.props.errors.postcode} hideLabel={true}/>
+
+                    <DateInput name="deliveryDate" onChange={this.props.onChange} value={this.props.order.deliveryDate}
+                               error={this.props.errors.deliveryDate} hideLabel={true}/>
                 </div>
 
                 <div className="form-group">
-                <a className="btn btn-warning" id="cancelButton" href="/">Cancel</a>
+                    <label>Total value: </label>
+                    <label name="orderTotal">{this.props.order.totalValue}</label>
+                </div>
 
-                <input
-                    type="submit"
-                    value="Save"
-                    className="btn btn-primary"
-                    onClick={this.props.onSave}
-                    disabled={!this.props.isValid}
-                />
+                <div className="form-group">
+                    <a className="btn btn-warning" id="cancelButton" href="/">Cancel</a>
+
+                    <input type="submit" value="Save" className="btn btn-primary" onClick={this.props.onSave}
+                           disabled={!this.props.isValid}/>
                 </div>
             </div>
         );
@@ -113,35 +88,4 @@ const OrderHeaderEdit = React.createClass({
 });
 
 export default OrderHeaderEdit;
-
-//<AsyncSelectInput
-//    name="customerId"
-//    label="Customer"
-//    value={this.props.order.customerId ? this.props.order.customerId : ''}
-//    onChange={this.props.onChange}
-//    //placeholder="Next contact date"
-//    error={this.props.errors.customerId}
-//    getOptions={this.getOptions}
-//    valueKey="_id"
-//    labelKey="name"
-//
-///>
-
-//<SelectInput
-//    name="customerId"
-//    label="Customer"
-//    value={this.props.order.customerId ? this.props.order.customerId : ''}
-//    onChange={this.props.onChange}
-//    //placeholder="Next contact date"
-//    error={this.props.errors.customerId}
-//    options={this.data.customers}
-//    valueKey="_id"
-//    labelKey="name"
-///>
-
-//
-//if (this.data.customersLoading) {
-//    console.log("loading");
-//    return ( <h3>Loading Order</h3> );
-//}
 
