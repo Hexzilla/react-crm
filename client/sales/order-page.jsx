@@ -4,6 +4,7 @@ import OrderLinesList from './order-lines-list.jsx';
 import OrderLineEdit from './order-line-edit.jsx';
 import { recalculateOrderTotals } from '../../lib/order-logic';
 
+
 const OrderPage = React.createClass({
     propTypes: {
         order: React.PropTypes.object,
@@ -12,7 +13,7 @@ const OrderPage = React.createClass({
 
     getInitialState() {
 
-        console.log("OrderPage.getInitialState", this.props);
+        console.log("OrderPage.getInitialState(): props", this.props);
 
         return {
             order: this.props.order,
@@ -41,7 +42,7 @@ const OrderPage = React.createClass({
 
     validateItemAgainstSchema(item, schemaContext) {
         const errors = {};
-        console.log("validateItemAgainstSchema:", item);
+        console.log("OrderPage.validateItemAgainstSchema(): item ", item);
         schemaContext.validate(item);
 
         schemaContext.invalidKeys().forEach(invalidKey => {
@@ -55,15 +56,7 @@ const OrderPage = React.createClass({
         return errors;
     },
 
-    onOrderHeaderChanged(event) {
-
-        console.log("onOrderHeaderChanged:", event.target);
-
-        // update our order state to reflect the new value in the UI
-         this.state.order[event.target.name] = event.target.value;
-        //console.log("New value ",this.state.order[event.target.name])
-
-
+    validateOrderHeaderAndUpdateState() {
         // validate the order against the table schema
         this.state.errors = this.validateItemAgainstSchema(
             this.state.order, Schemas.OrderSchema.namedContext("orderHeaderEdit"));
@@ -72,7 +65,26 @@ const OrderPage = React.createClass({
         //
         //// Update the state, this will then cause the re-render
         this.setState({order: this.state.order});
+    },
 
+    onOrderHeaderChanged(event) {
+        //console.log("OrderPage.onOrderHeaderChanged:", event.target);
+
+        // update our order state to reflect the new value in the UI
+         this.state.order[event.target.name] = event.target.value;
+        //console.log("New value ",this.state.order[event.target.name])
+
+        this.validateOrderHeaderAndUpdateState();
+    },
+
+    onOrderHeaderCustomerChanged(selectedItem) {
+        //console.log("OrderPage.onOrderHeaderCustomerChanged() customer:", selectedItem.value + " - " + selectedItem.label);
+
+        // update our order state to reflect the new value in the UI
+        this.state.order.customerId = selectedItem.value;
+        this.state.order.customerName = selectedItem.label;
+
+        this.validateOrderHeaderAndUpdateState();
     },
 
     setFormIsValid() {
@@ -115,7 +127,6 @@ const OrderPage = React.createClass({
             errorSet.errors = errors;
             this.state.lineErrorSets.push(errorSet);
         }
-
     },
 
     getErrorSetForOrderLine(orderLine) {
@@ -143,11 +154,11 @@ const OrderPage = React.createClass({
     },
 
     deleteOrderLine(id) {
-        console.log("deleteOrderLine", id);
+        console.log("OrderPage.deleteOrderLine", id);
 
         const line = this.state.order.orderLines.find(x => x._id === id);
         var pos = this.state.order.orderLines.indexOf(line);
-        console.log("index ", pos);
+        console.log("pos index ", pos);
 
         this.state.order.orderLines.splice(pos, 1);
 
@@ -159,17 +170,17 @@ const OrderPage = React.createClass({
     },
 
     saveOrder(event) {
-        console.log("saveOrder", event);
+        console.log("OrderPage.saveOrder", event);
         event.preventDefault();
         this.props.onSave(this.state.order);
     },
 
     render() {
-        //console.log("OrderPage props: ", this.props);
+        console.log("OrderPage.render() props: ", this.props);
         this.setFormIsValid();
 
         return (
-            <div className="panel panel-default col-md-6">
+            <div className="panel panel-default">
                 <form className="order_page" onSubmit={this.props.onSave}>
                     <div className="panel-body">
 
@@ -178,6 +189,7 @@ const OrderPage = React.createClass({
                         <OrderHeaderEdit
                             order = {this.state.order}
                             onChange = {this.onOrderHeaderChanged}
+                            onCustomerChange = {this.onOrderHeaderCustomerChanged}
                             onSave = {this.saveOrder}
                             errors = {this.state.errors}
                             isValid={this.state.isValid}
