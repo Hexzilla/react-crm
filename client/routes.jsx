@@ -1,91 +1,42 @@
-// Import to load these templates
-//import './app-body.html';
-//import './dashboard/dashboard.html';
-//import './blogpost/blog-post.html';
-//import './customers/customer-companies-list.html';
 
 /*
 * General note on passing data to templates:  Do not subscribe to
 * data in the routes, this is an anti-pattern,
 * https://kadira.io/academy/meteor-routing-guide/content/subscriptions-and-data-management
 * */
-//
-//FlowRouter.notFound = {
-//    action: function() {
-//        BlazeLayout.render("AppBody", {content: "notFound"});
-//    }
-//};
-//
-//FlowRouter.route('/', {
-//    name: "home",
-//    action: function() {
-//        BlazeLayout.render("AppBody", {content: "dashboard"});
-//    }
-//});
-//
-//FlowRouter.route('/post/:postId', {
-//    action: function() {
-//        BlazeLayout.render("AppBody", {content: "blogPost"});
-//    }
-//});
-//
-//
-//FlowRouter.route('/customers/:_id', {
-//    name: 'CustomerCompany.edit',
-//    action() {
-//        BlazeLayout.render('AppBody', {content: 'customer_company_edit'});
-//    }
-//});
-//
-//FlowRouter.route('/customersAuto/:_id', {
-//    name: 'CustomerCompany.editAuto',
-//    action() {
-//        BlazeLayout.render('AppBody', {content: 'updateCustomerEdit'});
-//    }
-//});
-//
-//
-//FlowRouter.route('/orders/newOrder', {
-//    name: 'newOrder',
-//    action: function() {
-//        BlazeLayout.render("AppBody", {content: "orderEditAuto"});
-//    }
-//});
-
-
-
 
 import React from 'react';
 import {mount} from 'react-mounter';
 import {Layout} from './app/app.jsx';
-import CustomersList from './customers/customers-list.jsx';
+//import CustomersList from './customers/customers-list.jsx';
 import CustomerEditPageWrapper from './customers/customer-edit-page-wrapper.jsx';
 import Dashboard from './dashboard/dashboard.jsx';
 import AppNotFound from './app/app-not-found.jsx';
+import OrderPageWrapper from './sales/order-page-wrapper.jsx';
 
 
-// define and export our Layout component
-export const Layout1 = ({content}) => (
-    <div>
-        <h1>My App</h1>
-        <hr />
-        <div>{content}</div>
-    </div>
-);
-
-// define and export our Welcome component
-export const Welcome = ({name}) => (
-    <div>
-        Hello, {name}.
-    </div>
-);
+//// define and export our Layout component
+//export const Layout1 = ({content}) => (
+//    <div>
+//        <h1>My App</h1>
+//        <hr />
+//        <div>{content}</div>
+//    </div>
+//);
+//
+//// define and export our Welcome component
+//export const Welcome = ({name}) => (
+//    <div>
+//        Hello, {name}.
+//    </div>
+//);
 
 
 
 FlowRouter.route("/", {
     name: "Home",
     action() {
-        console.log("route ", this.name);
+        //console.log("route ", this.name);
         mount(Layout, {
             content: (<Dashboard />)
         });
@@ -96,7 +47,7 @@ FlowRouter.route("/", {
 FlowRouter.route('/customers/:_id', {
     name: 'CustomerCompany.edit',
     action() {
-        console.log("route ", this.name);
+        //console.log("route ", this.name);
         mount(Layout, {
             content: (<CustomerEditPageWrapper />)
         });
@@ -106,7 +57,7 @@ FlowRouter.route('/customers/:_id', {
 FlowRouter.route("/addCustomer", {
     name: "addCustomer",
     action() {
-        console.log("route ", this.name);
+        //console.log("route ", this.name);
         mount(Layout, {
             content: (<CustomerEditPageWrapper />)
         });
@@ -115,14 +66,34 @@ FlowRouter.route("/addCustomer", {
 
 FlowRouter.notFound = {
     name: "notFoundRoute",
-    action: function() {
-        console.log("route ", this.name);
+    action() {
+        //console.log("route ", this.name);
         mount(Layout, {
             content: (<AppNotFound />)
         });
     }
 };
 
+
+FlowRouter.route('/orders/:_id', {
+    name: 'Order.edit',
+    action() {
+        //console.log("route ", this.name);
+        mount(Layout, {
+            content: (<OrderPageWrapper />)
+        });
+    }
+});
+
+FlowRouter.route("/addOrder", {
+    name: "addOrder",
+    action() {
+        console.log("route ", this.name);
+        mount(Layout, {
+            content: (<OrderPageWrapper />)
+        });
+    }
+});
 
 //
 //import React from 'react';
