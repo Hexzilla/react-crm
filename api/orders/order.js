@@ -37,6 +37,17 @@ Orders.before.upsert(function (userId, selector, modifier, options) {
 });
 
 
+Orders.after.insert(function (userId, doc) {
+    console.log("Orders.after.insert", doc);
+    customerCompanyDenormalizer.afterInsert(userId, doc);
+});
+
+Orders.after.update(function (userId, doc, fieldNames, modifier, options) {
+    console.log("Orders.after.update", doc);
+    customerCompanyDenormalizer.afterUpdate(userId, doc, fieldNames, modifier, options, this.previous);
+});
+
+
 const customerCompanyDenormalizer = {
     _updateCompanyNameOnOrder(order) {
         //console.log("customerCompanyDenormalizer._updateCompanyNameOnOrder() ",
