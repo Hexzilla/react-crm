@@ -21,3 +21,20 @@ Meteor.publish('Order.get', function (id) {
 
     return Orders.find({_id: id});
 });
+
+
+Meteor.publish('Order.customerTotals', function (customerId) {
+
+    //console.log("publication match ", Orders.find({_id: id}).fetch());
+
+
+    var pipeline = [
+        {$group: {_id: null, ordersTotalValue: {$sum: "$totalValue"}}}
+    ];
+
+    var result = Orders.aggregate(pipeline, {customerId});
+    console.log("Order.customerTotals:", JSON.stringify(result[0]), null, 2);
+    console.log("Order.customerTotals:", result);
+
+    return result;
+});
