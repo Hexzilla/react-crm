@@ -66,6 +66,59 @@ const customerCompanyDenormalizer = {
         //order.customerName = customer.name;
     },
 
+    _updateCompanyOrderTotals(customerId, previousCustomerId) {
+        if (Meteor.isServer) {
+            //console.log("_updateCompanyOrderTotals", customerId);
+
+            // no action needed if the customerId is not set
+            if (!customerId || customerId === null) {
+                return;
+            }
+
+            let customerIds = [customerId];
+
+            // if the customer Id changed we also need to update the order totals for
+            // the old customer
+            if (customerId !== previousCustomerId)
+            {
+                customerIds.push(previousCustomerId);
+            }
+
+            customerIds.forEach(function (thisCustomerId) {
+                let pipeline = [
+                    {
+                        $match: {
+                            customerId: thisCustomerId
+                        }
+                    },
+                    {
+                        $group: {
+                            _id: null,
+                            ordersTotalValue: {$sum: "$totalValue"},
+                            ordersCount: {$sum: 1}
+                        }
+                    }
+                ];
+
+                //console.log("thisCustomerId: ", thisCustomerId);
+                let result = Orders.aggregate(pipeline, {customerId: thisCustomerId})[0];
+
+                //console.log("result: ", result);
+                //console.log("result: ", result ? result.ordersTotalValue : "no ordersTotalValue");
+                //console.log("result: ", result ? result.ordersCount : "no ordersCount");
+                CustomerCompanies.update(thisCustomerId, {
+                    $set: {
+                        // the result will be null if this customer now has no orders
+                        ordersTotalValue:  result ? result.ordersTotalValue : 0,
+                        ordersCount:result ? result.ordersCount : 0
+                        //email: "hi@hi.com" //+ new Date().toTimeString()
+                    }
+                });
+            })
+
+            //console.log("_updateCompanyOrderTotals Completed");
+        }
+    },
     beforeInsert(userId, doc) {
         recalculateOrderTotals(doc);
         this._updateCompanyNameOnOrder(doc);
