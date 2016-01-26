@@ -1,5 +1,6 @@
 import { recalculateOrderTotals } from '../../lib/order-logic';
 
+
 class ordersCollection extends Mongo.Collection {}
 
 // Make it available to the rest of the app
@@ -119,24 +120,38 @@ const customerCompanyDenormalizer = {
             //console.log("_updateCompanyOrderTotals Completed");
         }
     },
+
+    _performCommonBeforeModifyActions(orderDoc) {
+        recalculateOrderTotals(orderDoc);
+        this._updateCompanyNameOnOrder(orderDoc);
+    },
+    
+    _performCommonAfterModifyActions(orderDoc, previousDoc) {
+        // Previous doc will be null for new records.
+        this._updateCompanyOrderTotals(orderDoc.customerId, previousDoc ? previousDoc.customerId : null);
+    },
+    
     beforeInsert(userId, doc) {
-        recalculateOrderTotals(doc);
-        this._updateCompanyNameOnOrder(doc);
+        this._performCommonBeforeModifyActions(doc)
     },
 
     beforeUpdate(userId, doc, fieldNames, modifier, options) {
-        recalculateOrderTotals(doc);
-        this._updateCompanyNameOnOrder(doc);
+        this._performCommonBeforeModifyActions(doc)
     },
 
     beforeUpsert(userId, selector, modifier, options) {
+        this._performCommonBeforeModifyActions(modifier.$set)
+    },
 
-        // Ensure all the line totals acrea correctly set, even if the UI already did this.
-        recalculateOrderTotals(modifier.$set);
+    afterInsert(userId, doc) {
+        this._performCommonAfterModifyActions(doc)
+    },
 
-        // Ensure the company name is set correctly
-        this._updateCompanyNameOnOrder(modifier.$set);
-    }
+    afterUpdate(userId, doc, fieldNames, modifier, options, previousDoc) {
+        console.log("previousDoc: ", previousDoc);
+        this._performCommonAfterModifyActions(doc, previousDoc)
+    }   
+
 };
 
 export default Orders;
