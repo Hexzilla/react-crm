@@ -1,6 +1,7 @@
 import React from 'react';
 import Autosuggest from 'react-autosuggest';
 import AsyncSelectInput from '../controls/asyncSelectInput.jsx';
+import accounting from 'accounting';
 
 
 const OrderHeaderEdit = React.createClass({
@@ -10,12 +11,13 @@ const OrderHeaderEdit = React.createClass({
         onCustomerChange: React.PropTypes.func.isRequired,
         onSave: React.PropTypes.func.isRequired,
         errors: React.PropTypes.object.isRequired,
+        errors: React.PropTypes.object.isRequired,
         isValid: React.PropTypes.bool,
     },
 
     getCustomers: function getCustomers(input) {
         console.log("OrderHeaderEdit.getCustomers()", input);
-        var customerHandle = Meteor.subscribe('CustomerCompanies.searchByName', input);
+        const handle = Meteor.subscribe('CustomerCompanies.searchByName', input);
         return CustomerCompanies.find().fetch();
     },
 
@@ -73,7 +75,7 @@ const OrderHeaderEdit = React.createClass({
 
                 <div className="form-group">
                     <label>Total value: </label>
-                    <label name="orderTotal">{this.props.order.totalValue}</label>
+                    <label name="orderTotal"> {accounting.formatMoney(this.props.order.totalValue, "£")}</label>
                 </div>
 
                 <div className="form-group">
