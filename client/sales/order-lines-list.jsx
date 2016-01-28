@@ -8,6 +8,7 @@ const OrderLinesList = React.createClass({
     propTypes: {
         order: React.PropTypes.object.isRequired,
         onChildChange: React.PropTypes.func.isRequired,
+        onProductChange: React.PropTypes.func.isRequired,
         deleteOrderLine: React.PropTypes.func,
         lineErrorSets: React.PropTypes.array.isRequired
     },
@@ -23,7 +24,7 @@ const OrderLinesList = React.createClass({
                 errors = errorSet.errors;
             }
         }
-        console.log(errors);
+        //console.log(errors);
         return errors;
     },
 
@@ -38,9 +39,11 @@ const OrderLinesList = React.createClass({
             return (
 
                 <div key={orderLine._id}>
+
                     <OrderLineEdit
                         orderLine={orderLine}
                         onChange={this.props.onChildChange}
+                        onProductChange={this.props.onProductChange}
                         deleteOrderLine={this.props.deleteOrderLine}
                         errors={this.getErrorsForLine(orderLine)}
                     />
@@ -50,11 +53,29 @@ const OrderLinesList = React.createClass({
         });
     },
 
+    divStyle: {
+        'min-width': "70px",
+        'verticalAlign' : top
+    },
 
     render() {
+        //console.log("OrderLinesList.render()");
         return (
             <div>
-                {this.renderOrderLines()}
+                <table id="cart" className="table  table-condensed" style={this.divStyle}>
+                    <thead>
+                    <tr>
+                        <th style={ {"min-width" : '200px'} }>Product</th>
+                        <th style={ this.divStyle }>Quantity</th>
+                        <th style={ {"min-width" : '90px'} }>Unit price</th>
+                        <th style={ {"min-width" : '90px'} }>Line total</th>
+                        <th style={ {"min-width" : '70px'} }></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {this.renderOrderLines()}
+                    </tbody>
+                </table>
             </div>
         );
     }
