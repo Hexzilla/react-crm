@@ -5,7 +5,7 @@
 
 
 import React from 'react';
-import MessageEditor from '../controls/message-editor.jsx';
+import MessageEditor from '../controls/modal-message-box.jsx';
 
 //var RouteHandler = require('react-router').RouteHandler;
 //var ReactCSSTransitionGroup = require('react-addons-css-transition-group');
@@ -13,6 +13,7 @@ import MessageEditor from '../controls/message-editor.jsx';
 
 Meteor.subscribe("SalesRegions.All");
 Meteor.subscribe("Orders.All");
+//Meteor.subscribe("Products.public");
 
 // define and export our Layout component
 export const Layout = ({content}) => (
@@ -35,7 +36,7 @@ export const Layout = ({content}) => (
 
                                     <main>
                                         <div id="popup"></div>
-                                        <MessageEditor />
+
                                         <div>{content}</div>
 
                                     </main>
