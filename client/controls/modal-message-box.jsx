@@ -31,18 +31,15 @@ const ModalMessageBox = React.createClass({
     },
 
     renderCloseButton() {
-        if(this.props.onConfirmAction) {
+        if (this.props.onConfirmAction) {
              return (
                  <button type="button" className="btn btn-default pull-left" data-dismiss="modal">Cancel</button>
             );
-        } else {
-            return (
-                <button type="button" className="btn btn-primary pull-right" data-dismiss="modal">OK</button>
-            );
         }
+        return <button type="button" className="btn btn-primary pull-right" data-dismiss="modal">OK</button>;
     },
 
-    render(){
+    render() {
         console.log("ModalMessageBox.render()");
 
         return (
