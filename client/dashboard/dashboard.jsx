@@ -1,5 +1,6 @@
 import React from 'react';
 import OrdersList from '../sales/orders-list.jsx';
+import OrdersListWrapper from '../sales/order-list-wrapper.jsx';
 import CustomersList from '../customers/customers-list.jsx';
 
 const Dashboard = React.createClass({
@@ -10,11 +11,11 @@ const Dashboard = React.createClass({
             <div>
                 <div className="panel panel-default">
                     <div className="panel-body">
-                        <h3>Dashboard <i className="fa fa-dashboard"></i></h3>
+                        <h3><i className="fa fa-dashboard"/> simple crm dashboard </h3>
                     </div>
                 </div>
-                <OrdersList/>
-                <CustomersList/>
+                <OrdersListWrapper />
+                <CustomersList />
             </div>
         );
     }
