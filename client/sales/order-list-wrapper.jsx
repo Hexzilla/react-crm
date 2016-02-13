@@ -2,8 +2,8 @@
  This class was added to allow the react animations to work correctly on the list.
  The issue was that render is called twice on the list, once with no data and then
  again when the data is present.  That was stopping the animations working, so
- broke the data retrieval out into a separate wrapper so the list will always have
- data to work with.
+ broke the data retrieval out into a separate wrapper so that then on the child
+ we can use shouldComponentUpdate to set whether the render should occur.
  */
 
 import React from 'react';
@@ -12,89 +12,94 @@ import Orders from '../../api/orders/order';
 import OrdersList from './orders-list.jsx';
 import { VelocityComponent, velocityHelpers, VelocityTransitionGroup } from 'velocity-react';
 
+const MINIMISED_RECORD_COUNT = 3;
+const EXPANDED_RECORD_COUNT = 9;
+
 const OrdersListWrapper = React.createClass({
 
-
     getInitialState() {
-        console.log("OrdersList.getInitialState() ");
-
         return {
             expanded: false,
-            duration: 500,
+            recordsToShow: MINIMISED_RECORD_COUNT,
+            showChild: false
         };
     },
 
-    renderDeviceToggle() {
-        //console.log("OrdersList.renderDeviceToggle() - this:", this);
-        //console.log("OrdersList.renderDeviceToggle() - state:", this.state);
+    // This mixin makes the getMeteorData method work
+    mixins: [ ReactMeteorData ],
 
-        var arrowAnimation = {
-            rotateX: this.state.expanded ? 180 : 0//,
-            //transformOriginY: [ '42%', '42%' ]
-        };
+    // Loads items from the Tasks collection and puts them on this.data.tasks
+    getMeteorData() {
+        //console.log("getMeteorData()");
 
-        let toggleState = function () {
-            //console.log("in toggleState: this: ", this);
+        var data = {};
 
-            this.setState({expanded: !this.state.expanded});
-        }.bind(this);
+        var handle = Meteor.subscribe('Orders.topOrders', this.state.recordsToShow);
 
-        let getLabel = function () {
-            if (this.state.expanded) {
-                return " Show less";
-            }
-            return " Show more";
-        }.bind(this);
+        if (handle.ready()) {
+            //console.log("orders", orders);
+            data.orders = Orders.find(
+                {},
+                {
+                    sort: {totalValue: -1},
+                    limit: this.state.recordsToShow
+                }
+            ).fetch();
+        }
 
+        data.dataReady = handle;
+        return data;
+    },
 
-        return (
-            <div className="device-toggle" onClick={toggleState}>
-                <div className="device-icon icon huge"></div>
-                {getLabel()}<span> </span>
-                <VelocityComponent duration={300} animation={arrowAnimation}>
-                    <i className="fa fa-arrow-down"/>
-                </VelocityComponent>
-            </div>
-        );
+    toggleExpanded() {
+        //console.log("toggleExpanded(): this.state.expanded 1: ", this.state.expanded);
+
+        this.state.expanded = !this.state.expanded;
+
+        //console.log("toggleExpanded(): this.state.expanded 2: ", this.state.expanded);
+
+        let recordsToShow = MINIMISED_RECORD_COUNT;
+        if (this.state.expanded) {
+            recordsToShow = EXPANDED_RECORD_COUNT;
+        }
+
+        this.setState({recordsToShow});
     },
 
     render() {
-        console.log("OrdersListWrapper.render() ")
-
-        let recordsToShow = 3;
-        if (this.state.expanded) {
-            recordsToShow = 6;
-        }
+        console.log("OrdersListWrapper.render() ");
 
         // Get tasks from this.data.tasks
         return (
-
-            <div>
-                <VelocityTransitionGroup component="div"
-                                         enter={{animation: 'fadeIn', duration: this.state.duration, style: {height: ''}}}
-                                         leave={{animation: 'fadeOut', duration: this.state.duration}}
-                >
-                    {this.state.expanded ? undefined : <div><OrdersList recordsToShow={recordsToShow}/></div> }
-                    {this.state.expanded ? <div><OrdersList recordsToShow={recordsToShow}/></div> : undefined }
-                </VelocityTransitionGroup>
-                {this.renderDeviceToggle()}
-            </div>
+            <OrdersList
+                orders={this.data.orders ? this.data.orders : []}
+                expanded={this.state.expanded}
+                toggleExpanded={this.toggleExpanded}
+                parentGotData={this.data.dataReady}
+            />
         );
     }
 });
 
 module.exports = OrdersListWrapper;
 
-//{this.state.expanded ? undefined : <div><OrdersList recordsToShow={recordsToShow}/></div> }
-//{this.state.expanded ? <div><OrdersList recordsToShow={recordsToShow}/></div> : undefined }
 
-//{this.state.expanded ?
-//    <div><OrdersList recordsToShow={recordsToShow}/></div> :
-//    <div><OrdersList recordsToShow={recordsToShow}/></div>
-//}
-
-//<div><OrdersList recordsToShow={recordsToShow}/></div>
-
-//{this.state.expanded ? <div><OrdersList recordsToShow={recordsToShow}/></div>
-//    : <div><OrdersList recordsToShow={recordsToShow}/></div> }
-
+//return (
+//    <VelocityTransitionGroup
+//
+//        enter={{animation: "fadeIn"}}
+//        leave={{animation: "fadeOut"}}
+//        duration={1500}
+//    >
+//        { this.state.showChild ?
+//            <OrdersList
+//                orders={this.data.orders ? this.data.orders : []}
+//                expanded={this.state.expanded}
+//                toggleExpanded={this.toggleExpanded}
+//            /> :
+//            undefined
+//        }
+//
+//    </VelocityTransitionGroup>
+//
+//);
