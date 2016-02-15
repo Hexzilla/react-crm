@@ -3,58 +3,33 @@ import React from 'react';
 import Orders from '../../api/orders/order';
 import OrdersListItem from './orders-list-item.jsx';
 import ModalMessageBox from '../controls/modal-message-box.jsx';
+import Collapse from 'react-collapse';
+import { VelocityComponent, velocityHelpers, VelocityTransitionGroup } from 'velocity-react';
 
 
 const OrdersList = React.createClass({
     propTypes: {
-        recordsToShow: React.PropTypes.number.isRequired
+        orders: React.PropTypes.array.isRequired,
+        expanded: React.PropTypes.bool.isRequired,
+        toggleExpanded: React.PropTypes.func.isRequired,
+        parentGotData: React.PropTypes.bool.isRequired
     },
 
-    getInitialState() {
-        console.log("OrdersList.getInitialState() ");
+    animationDuration: 500,
 
-        return {
-            ready: false,
-         };
-    },
-
-    // This mixin makes the getMeteorData method work
-    mixins: [ ReactMeteorData ],
-
-    // Loads items from the Tasks collection and puts them on this.data.tasks
-    getMeteorData() {
-        console.log("getMeteorData()");
-
-        var data = {};
-
-        var handle = Meteor.subscribe('Orders.topOrders', this.props.recordsToShow);
-        this.state.ready = handle.ready();
-
-        if (handle.ready()) {
-            //console.log("orders", orders);
-            data.orders = Orders.find(
-                {},
-                {
-                    sort: {totalValue: -1},
-                    limit: this.props.recordsToShow
-                }
-            ).fetch();
-        }
-
-        return data;
+    shouldComponentUpdate() {
+        console.log("shouldComponentUpdate", this.props.parentGotData);
+       // Don't re-render if there are no records, which there won't be
+        // after the first render (when the initial subscription happens
+        // and before the data is actually retrieved)
+        return (this.props.parentGotData);
     },
 
     renderOrderListItems() {
         //console.log("orders2", this.data.orders)
 
-        // Don't render until we have data to render
-        if (!this.data.orders) {
-            return;
-        }
-
         // Get tasks from this.data.tasks
-        return this.data.orders.map((order) => {
-
+        return this.props.orders.map((order) => {
             return (
                 <OrdersListItem order={order} key={order._id}/>
             );
@@ -65,7 +40,6 @@ const OrdersList = React.createClass({
         //console.log("orders2", this.data.orders)
         // Get tasks from this.data.tasks
         return (
-
             <table className="table table-responsive table-striped">
                 <tbody>
                 <tr>
@@ -75,16 +49,45 @@ const OrdersList = React.createClass({
                     <th></th>
                     <th></th>
                 </tr>
-                    {this.renderOrderListItems()}
+                {this.renderOrderListItems()}
                 </tbody>
             </table>
         );
     },
 
+    renderShowMoreToggle() {
+        //console.log("OrdersList.renderShowMoreToggle() - this:", this);
+        //console.log("OrdersList.renderShowMoreToggle() - state:", this.state);
 
+        var arrowAnimation = {
+            rotateX: this.props.expanded ? 180 : 0//,
+            //transformOriginY: [ '42%', '42%' ]
+        };
+
+        let getLabel = function () {
+            if (this.props.expanded) {
+                return " Show less";
+            }
+            return " Show more";
+        }.bind(this);
+
+        return (
+            <div className="device-toggle" onClick={this.props.toggleExpanded}>
+                <div className="device-icon icon huge"></div>
+                {getLabel()}<span> </span>
+                <VelocityComponent duration={this.animationDuration * 1.5} animation={arrowAnimation}>
+                    <i className="fa fa-arrow-down"/>
+                </VelocityComponent>
+            </div>
+        );
+    },
 
     render() {
         console.log("OrdersList render");
+        var transitionAnimation = {
+            rotateX: this.props.expanded ? 360 : 0//,
+            //transformOriginY: [ '42%', '42%' ]
+        };
 
         return (
             <div>
@@ -97,7 +100,16 @@ const OrdersList = React.createClass({
                         <h4>Top orders</h4>
                     </div>
                     <div className="panel-body">
-                        {this.renderOrderTable()}
+                        <Collapse isOpened={true} keepCollapsedContent={false}>
+                            <div style={{padding: 10}}>
+                                <VelocityComponent duration={this.animationDuration}
+                                                   animation={transitionAnimation}
+                                >
+                                    {this.renderOrderTable()}
+                                </VelocityComponent>
+                            </div>
+                        </Collapse>
+                        {this.renderShowMoreToggle()}
                     </div>
                 </div>
             </div>
@@ -106,3 +118,33 @@ const OrdersList = React.createClass({
 });
 
 module.exports = OrdersList;
+
+
+
+//renderTest() {
+//    if (this.props.expanded) {
+//        return (
+//            <div>
+//                <p>p</p>
+//                <p>p</p>
+//                <p>p</p>
+//                <p>p</p>
+//                <p>p</p>
+//                <p>p</p>
+//                <p>p</p>
+//                <p>p</p>
+//                <p>p</p>
+//            </div>
+//        );
+//    }
+//
+//    return (
+//        <div>
+//            <p>p</p>
+//            <p>p</p>
+//            <p>p</p>
+//            <p>p</p>
+//            <p>p</p>
+//        </div>
+//    );
+//},
