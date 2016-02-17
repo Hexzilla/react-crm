@@ -85,28 +85,28 @@ hr {
     width:inherit;
 }
 
-.navbar-blue li > a,.navbar-toggle  {
-    color:#efefef;
-}
+/*.navbar-blue li > a,.navbar-toggle  {*/
+    /*color:#efefef;*/
+/*}*/
 
-.navbar-blue .dropdown-menu li a {color:#2A4888;}
-.navbar-blue .dropdown-menu li > a {padding-left:30px;}
+/*.navbar-blue .dropdown-menu li a {color:#2A4888;}*/
+/*.navbar-blue .dropdown-menu li > a {padding-left:30px;}*/
 
-.navbar-blue li>a:hover, .navbar-blue li>a:focus, .navbar-blue .open, .navbar-blue .open>a, .navbar-blue .open>a:hover, .navbar-blue .open>a:focus {
-    background-color:#2A4888;
-    color:#fff;
-}
+/*.navbar-blue li>a:hover, .navbar-blue li>a:focus, .navbar-blue .open, .navbar-blue .open>a, .navbar-blue .open>a:hover, .navbar-blue .open>a:focus {*/
+    /*background-color:#2A4888;*/
+    /*color:#fff;*/
+/*}*/
 
 #main {
     background-color:#e9eaed;
     padding-left:0;
     padding-right:0;
 }
-#main .img-circle {
-    margin-top:18px;
-    height:70px;
-    width:70px;
-}
+/*#main .img-circle {*/
+    /*margin-top:18px;*/
+    /*height:70px;*/
+    /*width:70px;*/
+/*}*/
 
 #sidebar {
     padding:0;
