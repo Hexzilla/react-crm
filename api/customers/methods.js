@@ -1,9 +1,5 @@
 
-//import { CustomerCompanies } from './customer-company'
-
-
 CustomerCompanies.methods = {};
-
 
 // Manual form specific update method that knows how to unpack the single
 // object we get from autoform.
@@ -13,7 +9,7 @@ CustomerCompanies.methods.updateManualForm = new ValidatedMethod({
     name: 'CustomerCompanies.methods.updateManualForm',
 
     validate(args) {
-        console.log("validating2");
+        console.log("CustomerCompanies.methods.updateManualForm.validate(args) ", args);
 
         Schemas.CustomerCompaniesSchema.clean(args.data);
 
