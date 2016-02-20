@@ -13,52 +13,83 @@ const CustomerEditForm = React.createClass({
         isValid: React.PropTypes.bool
     },
 
+    onSave(event) {
+        event.preventDefault();
+
+        this.props.onSave(this.props.customer);
+    },
+
+    onChange(event) {
+        console.log("CustomerEditForm.onChange() name: " + event.target.name + " value: ", event.target.value)
+        this.callOnChange(event.target.name, event.target.value);
+    },
+
+    onSelectChange(newValue) {
+        console.log("CustomerEditForm.onSelectChange() name: " + newValue.name + " value: ", newValue)
+        this.callOnChange(newValue.name, newValue.value[newValue.valueKey]);
+    },
+
+    callOnChange(name, value) {
+        // create a single row array with the data in
+        this.props.onChange(this.props.customer._id, [ { name, value} ] );
+    },
+
     render() {
-        console.log("CustomerEditComponent props: ", this.props);
+        console.log("CustomerEditComponent.render() props: ", this.props);
+
+        let errors = {};
+        if (this.props.errors) {
+            errors = this.props.errors;
+        }
+
+        let isValid = this.props.isValid;
+        isValid = true;
 
         return (
             <div className="panel panel-default col-md-6">
-                <form className="customer_edit_react" onSubmit={this.props.onSave}>
+                <form className="customer_edit_react" onSubmit={this.onSave}>
                     <div className="panel-body">
 
                         <h3>{this.props.customer.name}</h3>
                         <TextInput
                             name="name"
-                            onChange={this.props.onChange}
+                            onChange={this.onChange}
                             value={this.props.customer.name}
-                            error={this.props.errors.name}
+                            error={errors.name}
                         />
 
                         <TextInput
                             name="email"
-                            onChange={this.props.onChange}
+                            onChange={this.onChange}
                             value={this.props.customer.email}
-                            error={this.props.errors.email}
+                            error={errors.email}
                         />
 
                         <TextInput
                             name="postcode"
-                            onChange={this.props.onChange}
+                            onChange={this.onChange}
                             value={this.props.customer.postcode}
-                            error={this.props.errors.postcode}
+                            error={errors.postcode}
                         />
 
                         <DateInput
                             name="nextContactDate"
-                            onChange={this.props.onChange}
+                            onChange={this.onChange}
                             value={this.props.customer.nextContactDate}
-                            error={this.props.errors.nextContactDate}
+                            error={errors.nextContactDate}
                         />
+
 
                         <SelectInput
                             name="salesRegionId"
+                            label="Sales region"
+                            placeholder ="Sales region"
                             value={this.props.customer.salesRegionId}
-                            onChange={this.props.onChange}
-                            error={this.props.errors.salesRegionId}
+                            onChange={this.onSelectChange}
+                            error={errors.salesRegionId}
                             options={this.props.salesRegionOptions}
                             valueKey="_id"
                             labelKey="name"
-
                         />
 
                         <a className="btn btn-warning" id="cancelButton" href="/">Cancel</a>
@@ -67,8 +98,8 @@ const CustomerEditForm = React.createClass({
                             type="submit"
                             value="Save"
                             className="btn btn-primary"
-                            onClick={this.props.onSave}
-                            disabled={!this.props.isValid}
+                            onClick={this.onSave}
+                            disabled={!isValid}
                         />
 
                     </div>
@@ -79,3 +110,5 @@ const CustomerEditForm = React.createClass({
 });
 
 module.exports = CustomerEditForm;
+
+
