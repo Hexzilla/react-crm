@@ -5,16 +5,21 @@
 // into one single app state. We'll use two reducers, one for transient state
 // that the UI uses (selected id,name) and one for data (coming from Mongo)
 
-import Actions from './action_creators.jsx';
+
 import { combineReducers } from 'redux';
-import { validateItemAgainstSchema } from '../../lib/validation-helpers';
 
 
-let { incrementScore, selectPlayer, playersChanged } = Actions;
+const MINIMISED_RECORD_COUNT = 3;
+const EXPANDED_RECORD_COUNT = 9;
+
 Reducers = {};
 
 let initialInterfaceState = {
-    customerBeingEdited: {}
+    customerBeingEdited: {},
+    orderList: {
+        expanded: false,
+        recordsToShow: MINIMISED_RECORD_COUNT
+    }
 };
 
 // helper to *copy* old state and merge new data with it
@@ -31,57 +36,55 @@ const userInterface = function userInterface(state = initialInterfaceState, acti
     switch (action.type) {
         case 'SELECT_CUSTOMER':
             console.log("userInterface SELECT_CUSTOMER, action:", action);
-            // we happen to be replacing all the reducers state but with merge you
-            // could just return the selectedId and it would retain selectedCustomerName
-            return merge(state, {
-                customerBeingEdited: CustomerCompanies.findOne({_id: action.customerId})
-            });
-        case 'SELECT_NEW_CUSTOMER':
-            console.log("userInterface SELECT_NEW_CUSTOMER, action:", action);
-            // we happen to be replacing all the reducers state but with merge you
-            // could just return the selectedId and it would retain selectedCustomerName
-
-            const newCustomer = {
-                name: "",
-                email: "",
-                postcode: "",
-                salesRegionId: "",
-                nextContactDate: new Date(),
-                createdAt: new Date()
-            };
 
             return merge(state, {
-                customerBeingEdited: newCustomer
+                customerBeingEdited: action.customer
             });
         case 'EDIT_CUSTOMER':
             console.log("userInterface EDIT_CUSTOMER, customer:", state.customerBeingEdited);
 
-            const customer = _.clone(state.customerBeingEdited);
-
-            for(let newValue of action.newValues) {
-                customer[newValue.name] = newValue.value;
-            }
-
-            // update our customer state to reflect the new value in the UI
-            //customer[action.event.target.name] = action.event.target.value;
-
-            customer.errors = validateItemAgainstSchema(customer, Schemas.CustomerCompaniesSchema);
-
-            customer.isValid = (Object.keys(customer.errors).length === 0);
-
-            //console.log("userInterface EDIT_CUSTOMER() updatedCustomer:", customer);
-
             // merge in our newly edited data
-            return merge(state, { customerBeingEdited: customer });
+            return merge(state, { customerBeingEdited: action.customer });
+        case 'TOGGLE_ORDER_LIST_EXPANDED':
+            const orderList = _.clone(state.orderList);
+            orderList.expanded = !orderList.expanded;
+            return merge(state, { orderList });
         default:
             return state;
     }
 };
 
+
+let initialOrderState = {
+    order: { status: "initial state"}
+};
+
+const orderBeingEdited = function orderBeingEdited(state = initialOrderState, action) {
+    console.log("reducers.userInterface  action:", {state, action});
+
+    switch (action.type) {
+        case 'SELECT_ORDER':
+            console.log("orderBeingEdited SELECT_ORDER, action:", action);
+
+            return merge(state, {
+                order: action.order
+            });
+        case 'EDIT_ORDER':
+            console.log("orderBeingEdited EDIT_ORDER, order:", action.order);
+            console.log("orderBeingEdited EDIT_ORDER, state:", state);
+
+            // merge in our newly edited data
+            return merge(state, { order: action.order });
+        default:
+            return state;
+    }
+};
+
+
 // using the ES6 default params instead of the manual check like above
 
 const customer = function customer(state = {}, action) {
-    console.log("reducers.customer", {state, action});
+    //console.log("reducers.customer", {state, action});
 
     switch (action.type) {
         case 'SAVE_CUSTOMER':
@@ -90,25 +93,42 @@ const customer = function customer(state = {}, action) {
             // flux-helper to fire a COLLECTION_CHANGED dispatch after the
             // increment update. Since we're doing that we'll just return the old
             // state to prevent the UI from re-rendering twice.
-
-            // The actual save to MM happened in the saveCustomer action creator
             return state;
         case 'CUSTOMERS_COLLECTION_CHANGED':
             console.log("reducers.customer CUSTOMERS_COLLECTION_CHANGED", {state, action});
             // we don't have to merge the single doc that changes since minimongo
             // keeps the entire cache for us. We'll just return the new minimongo state
             // We *could* also return another fetch if sorting wasn't so easy here
-            let docs = _.clone(action.collection); // clone to prevent mutating action!!
+            //let docs = _.clone(action.collection); // clone to prevent mutating action!!
             //return docs[0]; //.sort((a,b) => b.score - a.score);
-            return docs;
+            //return _.clone(action.collection);
+            return state;
         default:
             return state;
     }
 };
 
+
+const order = function order(state = {}, action) {
+    console.log("reducers.order", {state, action});
+
+    switch (action.type) {
+        case 'SAVE_ORDER':
+             return state;
+        case 'ORDERS_COLLECTION_CHANGED':
+            console.log("reducers.order ORDERS_COLLECTION_CHANGED", {state, action});
+            return state;
+        default:
+            return state;
+    }
+};
+
+
 const rootReducer = combineReducers({
     userInterface,
-    customer
+    customer,
+    order,
+    orderBeingEdited
 });
 
 export default rootReducer;
