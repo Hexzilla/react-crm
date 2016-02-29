@@ -9,8 +9,9 @@
 import React, { Component, PropTypes } from 'react';
 
 import Orders from '../../api/orders/order';
-import OrdersList from './orders-list.jsx';
-import { VelocityComponent, velocityHelpers, VelocityTransitionGroup } from 'velocity-react';
+import OrdersList from './OrdersList.jsx';
+import CollapsiblePanel from '../controls/CollapsiblePanel.jsx';
+
 import { toggleExpanded } from '../redux/order-list-actions.jsx';
 
 const MINIMISED_RECORD_COUNT = 3;
@@ -18,18 +19,8 @@ const EXPANDED_RECORD_COUNT = 9;
 
 const TopOrdersContainer = React.createClass({
 
-    getInitialState() {
-        return {
-            expanded: false,
-            recordsToShow: MINIMISED_RECORD_COUNT,
-            showChild: false
-        };
-    },
+    mixins: [ReactMeteorData],
 
-    // This mixin makes the getMeteorData method work
-    mixins: [ ReactMeteorData ],
-
-    // Loads items from the Tasks collection and puts them on this.data.tasks
     getMeteorData() {
         //console.log("getMeteorData()");
 
@@ -63,21 +54,25 @@ const TopOrdersContainer = React.createClass({
     render() {
         console.log("OrdersListWrapper.render() ");
 
-        // Get tasks from this.data.tasks
         return (
-            <OrdersList
-                orders={this.data.orders ? this.data.orders : []}
+            <CollapsiblePanel
                 expanded={this.props.expanded}
                 toggleExpanded={this.props.toggleExpanded}
                 parentGotData={this.data.dataReady}
-            />
+                panelTitle = "Top orders"
+                itemType = "order"
+                newItemLink ="/addOrder"
+                allItemsLink ="/allOrders"
+            >
+                <OrdersList
+                    orders={this.data.orders ? this.data.orders : []}
+                />
+            </CollapsiblePanel>
         );
     }
 });
 
-
 TopOrdersContainer.propTypes = {
-    //orders: PropTypes.array.isRequired,
     expanded: PropTypes.bool.isRequired
 };
 
@@ -91,26 +86,3 @@ function mapStateToProps(state) {
 export default connect(mapStateToProps, {
     toggleExpanded
 })(TopOrdersContainer);
-
-
-
-
-//return (
-//    <VelocityTransitionGroup
-//
-//        enter={{animation: "fadeIn"}}
-//        leave={{animation: "fadeOut"}}
-//        duration={1500}
-//    >
-//        { this.state.showChild ?
-//            <OrdersList
-//                orders={this.data.orders ? this.data.orders : []}
-//                expanded={this.props.expanded}
-//                toggleExpanded={this.toggleExpanded}
-//            /> :
-//            undefined
-//        }
-//
-//    </VelocityTransitionGroup>
-//
-//);
