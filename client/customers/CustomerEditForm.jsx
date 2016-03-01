@@ -1,4 +1,3 @@
-//var TextInput = require('./textInput');
 var React = require('react');
 
 // App component - represents the whole app
